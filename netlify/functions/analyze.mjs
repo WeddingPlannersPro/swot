@@ -7,7 +7,7 @@
  */
 
 const RECIPIENT = "team@weddingplannerspro.it";
-const FROM      = "SWOT Tool <noreply@weddingplannerspro.it>"; // dominio verificato su Resend
+const FROM      = "WPP SWOT Tool <onboarding@resend.dev>";
 
 export default async (req) => {
   if (req.method !== "POST") {
