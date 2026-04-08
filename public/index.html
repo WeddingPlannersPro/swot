@@ -1,1 +1,507 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- BUILD: v5-$(date +%s) -->
+<title>SWOT Positioning Tool — Wedding Planners Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D2147;--blue:#1E56C8;--blue-mid:#2E6BE6;
+  --blue-light:#EBF2FF;--blue-pale:#F5F8FF;--gold:#C9A84C;--gold-light:#FBF5E2;
+  --mid:#3A5272;--grey:#7A95B8;--border:#D9E6F7;--white:#FFFFFF;--bg:#F7FAFF;
+  --shadow:0 2px 16px rgba(30,86,200,.07);--shadow-lg:0 8px 40px rgba(13,33,71,.13);
+  --r:12px;--serif:'Lora',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--navy);min-height:100vh;overflow-x:hidden}
 
+/* Header */
+.site-header{background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(30,86,200,.06)}
+.logo-wrap img{height:36px;object-fit:contain;display:block}
+.header-pill{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);background:var(--blue-light);border:1px solid rgba(30,86,200,.2);padding:5px 13px;border-radius:20px}
+
+/* Progress */
+.progress-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px}
+.progress-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;padding:14px 0;gap:0;overflow-x:auto}
+.sp{display:flex;align-items:center;gap:9px;padding:6px 12px 6px 6px;border-radius:30px;cursor:pointer;flex-shrink:0;transition:background .15s}
+.sp:hover{background:var(--blue-pale)}
+.sp-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid var(--border);color:var(--grey);background:var(--white);flex-shrink:0;transition:all .25s}
+.sp.active .sp-num{background:var(--blue);border-color:var(--blue);color:var(--white)}
+.sp.done .sp-num{background:#16a34a;border-color:#16a34a;color:var(--white)}
+.sp-lbl{font-size:11.5px;font-weight:500;color:var(--grey);white-space:nowrap}
+.sp.active .sp-lbl{color:var(--blue);font-weight:600}
+.sp.done .sp-lbl{color:#16a34a}
+.sp-line{flex:1;height:2px;background:var(--border);margin:0 4px;min-width:16px;transition:background .3s}
+.sp-line.done{background:#16a34a}
+
+/* Main */
+.main{max-width:860px;margin:0 auto;padding:52px 28px 100px}
+.step-screen{display:none}
+.step-screen.active{display:block}
+
+/* Hero */
+.hero{margin-bottom:36px}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
+.hero-dot{width:5px;height:5px;border-radius:50%;background:var(--gold)}
+.hero h1{font-family:var(--serif);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.15;color:var(--navy);margin-bottom:12px}
+.hero h1 em{color:var(--blue);font-style:italic}
+.hero p{font-size:14.5px;color:var(--mid);line-height:1.7;max-width:540px}
+
+/* Anag grid */
+.anag{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:20px;box-shadow:var(--shadow)}
+@media(max-width:620px){.anag{grid-template-columns:1fr 1fr}}
+@media(max-width:420px){.anag{grid-template-columns:1fr}}
+.fg label{display:block;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--grey);margin-bottom:6px}
+input[type="text"]{width:100%;height:40px;font-family:var(--sans);font-size:13.5px;color:var(--navy);background:var(--blue-pale);border:1.5px solid var(--border);border-radius:8px;padding:0 12px;outline:none;transition:border-color .2s,box-shadow .2s}
+input[type="text"]:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(30,86,200,.08);background:var(--white)}
+
+/* Accordion (step 1 only) */
+.acc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden}
+.acc-head{display:flex;align-items:center;gap:13px;padding:16px 22px;cursor:pointer;user-select:none;transition:background .12s}
+.acc-head:hover{background:var(--blue-pale)}
+.acc-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:17px;font-weight:600;flex-shrink:0}
+.acc-info{flex:1}
+.acc-title{font-size:13.5px;font-weight:600;color:var(--navy)}
+.acc-sub{font-size:11.5px;color:var(--grey);margin-top:1px}
+.acc-arrow{font-size:11px;color:var(--grey);transition:transform .2s}
+.acc.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.acc.open .acc-body{display:block}
+.th-s .acc-icon{background:var(--blue-light);color:var(--blue)}
+.th-w .acc-icon{background:#FDE8F1;color:#D05090}
+.th-o .acc-icon{background:#E8F8F0;color:#16935A}
+.th-t .acc-icon{background:#FEF0E8;color:#D05020}
+
+/* Section card (step 2 e 3 — sempre visibile, no accordion) */
+.sec-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;box-shadow:var(--shadow);overflow:hidden}
+.sec-card-head{display:flex;align-items:center;gap:13px;padding:16px 22px;background:var(--blue-pale);border-bottom:1px solid var(--border)}
+.sec-card-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.sec-card-body{padding:0 22px 22px}
+
+/* Questions */
+.q{padding:19px 0;border-bottom:1px solid var(--border)}
+.q:last-child{border-bottom:none;padding-bottom:0}
+.q-top{display:flex;gap:11px;align-items:flex-start;margin-bottom:9px}
+.q-badge{width:21px;height:21px;border-radius:50%;font-size:10.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.th-s .q-badge{background:var(--blue-light);color:var(--blue)}
+.th-w .q-badge{background:#FDE8F1;color:#D05090}
+.th-o .q-badge{background:#E8F8F0;color:#16935A}
+.th-t .q-badge{background:#FEF0E8;color:#D05020}
+.q-badge-blue{background:var(--blue-light);color:var(--blue)}
+.q-badge-pink{background:#FDE8F1;color:#D05090}
+.q-badge-gold{background:var(--gold-light);color:var(--gold)}
+.q-text{font-size:13.5px;font-weight:500;color:var(--navy);line-height:1.5}
+.q-note{font-size:11.5px;color:var(--grey);font-style:italic;margin-bottom:8px;padding-left:32px}
+textarea{width:100%;font-family:var(--sans);font-size:13.5px;color:var(--navy);background:var(--blue-pale);border:1.5px solid var(--border);border-radius:8px;padding:10px 13px;resize:none;outline:none;line-height:1.6;transition:border-color .2s,box-shadow .2s;overflow:hidden;min-height:44px}
+textarea:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(30,86,200,.08);background:var(--white)}
+
+/* Scale */
+.scale-wrap{padding-left:32px}
+.scale-row{display:flex;gap:7px}
+.scb{flex:1;padding:9px 4px;border:1.5px solid var(--border);border-radius:9px;background:var(--white);cursor:pointer;text-align:center;font-family:var(--sans);display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .12s}
+.scb:hover{border-color:var(--blue-mid);background:var(--blue-light)}
+.scb.on{border-color:var(--blue);background:var(--blue)}
+.scb .n{font-size:14px;font-weight:700;color:var(--mid)}
+.scb.on .n{color:var(--white)}
+.scb .l{font-size:9.5px;color:var(--grey);line-height:1.2}
+.scb.on .l{color:rgba(255,255,255,.75)}
+
+/* Buttons */
+.btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:40px;gap:14px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:40px;font-family:var(--sans);font-size:13.5px;font-weight:600;cursor:pointer;border:none;transition:all .18s}
+.btn-primary{background:var(--blue);color:var(--white);box-shadow:0 4px 14px rgba(30,86,200,.3)}
+.btn-primary:hover{background:var(--blue-mid);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--mid);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--blue-mid);color:var(--blue);background:var(--blue-light)}
+.btn-navy{background:var(--navy);color:var(--white);box-shadow:0 4px 14px rgba(13,33,71,.28)}
+.btn-navy:hover{background:#162e5c;transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* Loading */
+#loading{display:none;position:fixed;inset:0;background:rgba(13,33,71,.93);backdrop-filter:blur(10px);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+#loading.on{display:flex}
+.ring{width:56px;height:56px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-txt{font-family:var(--serif);font-size:1.3rem;color:var(--white);text-align:center}
+.load-sub{font-size:12.5px;color:rgba(255,255,255,.45);text-align:center;max-width:260px}
+
+/* Done */
+.done-wrap{text-align:center;padding:80px 24px;max-width:560px;margin:0 auto}
+.done-icon{width:72px;height:72px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;font-size:2rem}
+.done-wrap h1{font-family:var(--serif);font-size:2.4rem;color:var(--navy);margin-bottom:14px;line-height:1.15}
+.done-wrap h1 em{color:var(--blue)}
+.done-nome{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--gold);margin-bottom:24px}
+.done-wrap p{font-size:15px;color:var(--mid);line-height:1.7;margin-bottom:10px}
+.done-email-box{display:inline-flex;align-items:center;gap:10px;background:var(--blue-light);border:1px solid rgba(30,86,200,.2);border-radius:40px;padding:10px 20px;margin:14px 0 32px}
+.done-email-box span{font-size:13px;font-weight:600;color:var(--blue)}
+.done-divider{height:1px;background:var(--border);margin:32px 0}
+.done-note{font-size:13px;color:var(--grey);background:var(--blue-pale);border-radius:10px;padding:14px 18px;margin-bottom:32px;text-align:left;line-height:1.9}
+.done-note strong{color:var(--navy)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#b91c1c;color:var(--white);padding:11px 22px;border-radius:8px;font-size:13px;z-index:300;display:none;max-width:340px;text-align:center}
+.toast.on{display:block}
+
+@media(max-width:640px){
+  .main{padding:32px 16px 80px}
+  .btn-row{flex-direction:column}
+  .btn{width:100%;justify-content:center}
+  .sp-lbl{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-wrap"><img src="logo.jpg" alt="Wedding Planners Pro"></div>
+  <span class="header-pill">SWOT Positioning Tool · v5</span>
+</header>
+
+<nav class="progress-bar">
+  <div class="progress-inner">
+    <div class="sp active" id="sp1" onclick="goTo(1)"><div class="sp-num" id="sn1">1</div><span class="sp-lbl">Analisi Personale</span></div>
+    <div class="sp-line" id="ln1"></div>
+    <div class="sp" id="sp2" onclick="goTo(2)"><div class="sp-num" id="sn2">2</div><span class="sp-lbl">Concorrenza</span></div>
+    <div class="sp-line" id="ln2"></div>
+    <div class="sp" id="sp3" onclick="goTo(3)"><div class="sp-num" id="sn3">3</div><span class="sp-lbl">Target Ideale</span></div>
+    <div class="sp-line" id="ln3"></div>
+    <div class="sp" id="sp4"><div class="sp-num" id="sn4">✉</div><span class="sp-lbl">Analisi AI</span></div>
+  </div>
+</nav>
+
+<div id="loading">
+  <div class="ring"></div>
+  <div class="load-txt">Analisi in corso…</div>
+  <div class="load-sub">L'AI sta elaborando il profilo e costruendo le proposte di posizionamento</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<main class="main">
+
+<!-- ═══ STEP 1 ═══════════════════════════════════════════════════════════ -->
+<div id="s1" class="step-screen active">
+  <div class="hero">
+    <div class="hero-tag"><span class="hero-dot"></span>Step 1 di 3</div>
+    <h1>Analisi <em>Personale</em><br>e Professionale</h1>
+    <p>Partiamo da te: punti di forza, aree di crescita, opportunità nel tuo contesto. Rispondi con sincerità — non esistono risposte sbagliate.</p>
+  </div>
+
+  <div class="anag">
+    <div class="fg"><label>Il tuo nome *</label><input type="text" id="nome" placeholder="Es. Giulia Rossi"></div>
+    <div class="fg"><label>Città / Regione</label><input type="text" id="citta" placeholder="Es. Firenze, Toscana"></div>
+    <div class="fg"><label>Esperienza settore</label><input type="text" id="esp" placeholder="Es. 0 anni / 6 mesi"></div>
+  </div>
+
+  <div class="acc th-s open">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-icon">S</div><div class="acc-info"><div class="acc-title">Punti di Forza</div><div class="acc-sub">Cosa hai già — talenti, esperienze, risorse</div></div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="q"><div class="q-top"><span class="q-badge">1</span><span class="q-text">Quali esperienze di vita o lavoro hai già che potrebbero essere utili?</span></div><div class="q-note">Es. coordinazione eventi, lavoro in hotel, arredamento, grafica, relazioni pubbliche…</div><textarea id="f_s1" rows="3" placeholder="Descrivi le tue esperienze più rilevanti…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">2</span><span class="q-text">Quali sono le tue 3 qualità personali più forti? Come si traducono in questo lavoro?</span></div><textarea id="f_s2" rows="3" placeholder="Es. sono molto organizzata, empatica, creativa…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">3</span><span class="q-text">Come valuti la tua capacità di gestire lo stress e lavorare sotto pressione?</span></div>
+        <div class="scale-wrap"><div class="scale-row" id="sc-s3">
+          <button class="scb" onclick="sc('s3',1,this)"><span class="n">1</span><span class="l">Per niente</span></button>
+          <button class="scb" onclick="sc('s3',2,this)"><span class="n">2</span><span class="l">Poco</span></button>
+          <button class="scb" onclick="sc('s3',3,this)"><span class="n">3</span><span class="l">Abbastanza</span></button>
+          <button class="scb" onclick="sc('s3',4,this)"><span class="n">4</span><span class="l">Bene</span></button>
+          <button class="scb" onclick="sc('s3',5,this)"><span class="n">5</span><span class="l">Molto bene</span></button>
+        </div></div>
+      </div>
+      <div class="q"><div class="q-top"><span class="q-badge">4</span><span class="q-text">Hai già una rete di contatti nel settore (fornitori, venue, fotografi…)?</span></div><div class="q-note">Elenca le categorie e indica se sono contatti solidi o da sviluppare</div><textarea id="f_s4" rows="2" placeholder="Es. ho una fotografa con cui ho già collaborato…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">5</span><span class="q-text">Come valuti le tue capacità digitali? (social, design, email, CRM)</span></div>
+        <div class="scale-wrap"><div class="scale-row" id="sc-s5">
+          <button class="scb" onclick="sc('s5',1,this)"><span class="n">1</span><span class="l">Per niente</span></button>
+          <button class="scb" onclick="sc('s5',2,this)"><span class="n">2</span><span class="l">Poco</span></button>
+          <button class="scb" onclick="sc('s5',3,this)"><span class="n">3</span><span class="l">Abbastanza</span></button>
+          <button class="scb" onclick="sc('s5',4,this)"><span class="n">4</span><span class="l">Bene</span></button>
+          <button class="scb" onclick="sc('s5',5,this)"><span class="n">5</span><span class="l">Molto bene</span></button>
+        </div></div>
+      </div>
+      <div class="q"><div class="q-top"><span class="q-badge">6</span><span class="q-text">C'è qualcosa che sai fare in modo naturale, quasi senza sforzo, che gli altri trovano difficile?</span></div><textarea id="s6" rows="2" placeholder="Il tuo talento unico…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="acc th-w">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-icon">W</div><div class="acc-info"><div class="acc-title">Punti di Debolezza</div><div class="acc-sub">Cosa devi ancora costruire — lacune e aree da rafforzare</div></div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="q"><div class="q-top"><span class="q-badge">7</span><span class="q-text">In quali aspetti tecnici del mestiere ti senti meno preparata?</span></div><div class="q-note">Es. contratti, gestione budget, coordinamento il giorno del matrimonio…</div><textarea id="w7" rows="3" placeholder="Sii onesta — è utile per l'analisi…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">8</span><span class="q-text">Come valuti la tua capacità di comunicare in modo chiaro e persuasivo?</span></div>
+        <div class="scale-wrap"><div class="scale-row" id="sc-w8">
+          <button class="scb" onclick="sc('w8',1,this)"><span class="n">1</span><span class="l">Per niente</span></button>
+          <button class="scb" onclick="sc('w8',2,this)"><span class="n">2</span><span class="l">Poco</span></button>
+          <button class="scb" onclick="sc('w8',3,this)"><span class="n">3</span><span class="l">Abbastanza</span></button>
+          <button class="scb" onclick="sc('w8',4,this)"><span class="n">4</span><span class="l">Bene</span></button>
+          <button class="scb" onclick="sc('w8',5,this)"><span class="n">5</span><span class="l">Molto bene</span></button>
+        </div></div>
+      </div>
+      <div class="q"><div class="q-top"><span class="q-badge">9</span><span class="q-text">C'è qualche paura o blocco specifico legato all'iniziare questa carriera?</span></div><div class="q-note">Es. paura del giudizio, insicurezza sul prezzo, timore di non essere all'altezza…</div><textarea id="w9" rows="3" placeholder="Non ci sono risposte sbagliate…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">10</span><span class="q-text">Come valuti la tua attuale visibilità online?</span></div>
+        <div class="scale-wrap"><div class="scale-row" id="sc-w10">
+          <button class="scb" onclick="sc('w10',1,this)"><span class="n">1</span><span class="l">Per niente</span></button>
+          <button class="scb" onclick="sc('w10',2,this)"><span class="n">2</span><span class="l">Poco</span></button>
+          <button class="scb" onclick="sc('w10',3,this)"><span class="n">3</span><span class="l">Abbastanza</span></button>
+          <button class="scb" onclick="sc('w10',4,this)"><span class="n">4</span><span class="l">Bene</span></button>
+          <button class="scb" onclick="sc('w10',5,this)"><span class="n">5</span><span class="l">Molto bene</span></button>
+        </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc th-o">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-icon">O</div><div class="acc-info"><div class="acc-title">Opportunità</div><div class="acc-sub">Cosa il contesto ti offre — territorio, relazioni, momento</div></div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="q"><div class="q-top"><span class="q-badge">11</span><span class="q-text">Perché hai scelto questo momento per iniziare? Cosa è cambiato?</span></div><textarea id="o11" rows="2" placeholder="Il contesto che ti ha spinto…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">12</span><span class="q-text">Il territorio in cui vivi ha caratteristiche che possono facilitare il tuo percorso?</span></div><div class="q-note">Es. location belle, scarsa concorrenza, turismo…</div><textarea id="o12" rows="2" placeholder="Descrivilo…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">13</span><span class="q-text">C'è una tipologia di matrimonio che senti come una tua opportunità naturale?</span></div><div class="q-note">Es. matrimoni intimi, elopement, cerimonie civili creative, destination…</div><textarea id="o13" rows="2" placeholder="La tua nicchia naturale…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="acc th-t">
+    <div class="acc-head" onclick="tog(this)"><div class="acc-icon">T</div><div class="acc-info"><div class="acc-title">Minacce</div><div class="acc-sub">Cosa potrebbe ostacolarti — contesto e abitudini</div></div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="q"><div class="q-top"><span class="q-badge">14</span><span class="q-text">Ci sono persone nel tuo contesto che non credono in questo percorso?</span></div><textarea id="t14" rows="2" placeholder="Come potrebbe influire?"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge">15</span><span class="q-text">C'è qualcosa nel tuo carattere che riconosci come ostacolo ricorrente?</span></div><div class="q-note">Es. procrastinazione, perfezionismo bloccante, difficoltà a chiedere aiuto…</div><textarea id="t15" rows="2" placeholder="Onestà prima di tutto…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="acc" style="border-color:var(--gold)">
+    <div class="acc-head" onclick="tog(this)" style="background:var(--gold-light)"><div class="acc-icon" style="background:var(--gold-light);color:var(--gold);font-size:1.2rem">✦</div><div class="acc-info"><div class="acc-title">Visione</div><div class="acc-sub">Dove vuoi arrivare — il tuo punto d'arrivo orienta tutto</div></div><span class="acc-arrow">▼</span></div>
+    <div class="acc-body">
+      <div class="q"><div class="q-top"><span class="q-badge" style="background:var(--gold-light);color:var(--gold)">16</span><span class="q-text">Descrivi il tuo sogno professionale come wedding planner tra 3 anni.</span></div><textarea id="v16" rows="3" placeholder="Immagina te stessa tra 3 anni…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge" style="background:var(--gold-light);color:var(--gold)">17</span><span class="q-text">Cosa significherebbe per te avere successo? Come lo misureresti?</span></div><div class="q-note">Es. numero di matrimoni, tipo di clienti, stile di vita, reddito…</div><textarea id="v17" rows="2" placeholder="La tua definizione di successo…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="btn-row"><span></span><button class="btn btn-primary" onclick="next(1)">Continua: Concorrenza →</button></div>
+</div>
+
+<!-- ═══ STEP 2 ═══════════════════════════════════════════════════════════ -->
+<div id="s2" class="step-screen">
+  <div class="hero">
+    <div class="hero-tag"><span class="hero-dot"></span>Step 2 di 3</div>
+    <h1>Analisi della <em>Concorrenza</em></h1>
+    <p>Non serve una ricerca esaustiva — bastano le osservazioni che hai già fatto. L'obiettivo è capire il tuo spazio di differenziazione.</p>
+  </div>
+
+  <div class="sec-card">
+    <div class="sec-card-head">
+      <div class="sec-card-icon" style="background:var(--blue-light);color:var(--blue)">🔍</div>
+      <div class="acc-info"><div class="acc-title">Il Mercato Locale</div><div class="acc-sub">Cosa succede nella tua area geografica</div></div>
+    </div>
+    <div class="sec-card-body">
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-blue">1</span><span class="q-text">Quante wedding planner conosci o hai identificato nella tua area geografica?</span></div><div class="q-note">Anche "poche", "molte", "non lo so" sono risposte valide</div><textarea id="c1" rows="2" placeholder="Stima approssimativa…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-blue">2</span><span class="q-text">Descrivi 1-3 competitor che hai osservato (anche solo online). Come si presentano?</span></div><div class="q-note">Tipo di matrimoni, stile visivo, tono comunicativo, fascia di prezzo percepita</div><textarea id="c2" rows="4" placeholder="Es. La prima ha un sito elegante orientato ai matrimoni di lusso in villa…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-blue">3</span><span class="q-text">Cosa fanno bene i competitor? Cosa potresti fare diversamente o meglio?</span></div><textarea id="c3" rows="3" placeholder="Punti di forza che noti e spazi aperti che vedi…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-blue">4</span><span class="q-text">C'è una nicchia o un tipo di matrimonio che nessuno nella tua area sembra presidiare?</span></div><textarea id="c4" rows="2" placeholder="Uno spazio vuoto che hai notato…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="sec-card">
+    <div class="sec-card-head">
+      <div class="sec-card-icon" style="background:#FDE8F1;color:#D05090">📊</div>
+      <div class="acc-info"><div class="acc-title">Posizionamento e Prezzi</div><div class="acc-sub">Come si collocano gli altri nel mercato</div></div>
+    </div>
+    <div class="sec-card-body">
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-pink">5</span><span class="q-text">Hai idea delle fasce di prezzo praticate nella tua area?</span></div><div class="q-note">Anche "non lo so ancora" è utile — indica che c'è ricerca da fare</div><textarea id="c5" rows="2" placeholder="Es. percepisco che si parte da 2.000€, ma non ho certezze…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-pink">6</span><span class="q-text">Come ti aspetti di posizionarti rispetto al mercato locale?</span></div><textarea id="c6" rows="2" placeholder="Es. entry level per costruire portfolio, poi salire…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-pink">7</span><span class="q-text">Qual è il tuo elemento differenziante principale rispetto ai competitor?</span></div><div class="q-note">Anche un'intuizione va bene — non deve essere definitivo</div><textarea id="c7" rows="3" placeholder="Cosa potresti offrire che gli altri non offrono?"></textarea></div>
+    </div>
+  </div>
+
+  <div class="btn-row"><button class="btn btn-ghost" onclick="prev(2)">← Torna allo Step 1</button><button class="btn btn-primary" onclick="next(2)">Continua: Target Ideale →</button></div>
+</div>
+
+<!-- ═══ STEP 3 ═══════════════════════════════════════════════════════════ -->
+<div id="s3" class="step-screen">
+  <div class="hero">
+    <div class="hero-tag"><span class="hero-dot"></span>Step 3 di 3</div>
+    <h1>Il Tuo <em>Target Ideale</em></h1>
+    <p>Chi sono le coppie con cui vorresti lavorare? Non pensare a chi puoi raggiungere adesso, ma a chi vorresti raggiungere davvero.</p>
+  </div>
+
+  <div class="sec-card">
+    <div class="sec-card-head">
+      <div class="sec-card-icon" style="background:#E8F8F0;color:#16935A">👫</div>
+      <div class="acc-info"><div class="acc-title">La Coppia Ideale</div><div class="acc-sub">Chi sono, come vivono, cosa sognano</div></div>
+    </div>
+    <div class="sec-card-body">
+      <div class="q"><div class="q-top"><span class="q-badge" style="background:#E8F8F0;color:#16935A">1</span><span class="q-text">Come descriveresti la coppia ideale con cui lavorare? (età, stile di vita, valori, interessi)</span></div><textarea id="t1" rows="3" placeholder="Es. coppie tra 28-38 anni, professioniste, che amano il design e i dettagli ricercati…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge" style="background:#E8F8F0;color:#16935A">2</span><span class="q-text">Che tipo di matrimonio sognano? Quali sono le loro priorità?</span></div><div class="q-note">Es. autenticità, esclusività, sostenibilità, location particolare…</div><textarea id="t2" rows="3" placeholder="Descrivi il matrimonio dei tuoi sogni (che è anche il loro)…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge" style="background:#E8F8F0;color:#16935A">3</span><span class="q-text">Qual è il budget indicativo che questa coppia sarebbe disposta a spendere?</span></div><textarea id="t3" rows="1" placeholder="Es. tra 15.000€ e 30.000€ per il matrimonio complessivo…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge" style="background:#E8F8F0;color:#16935A">4</span><span class="q-text">Da dove vengono queste coppie? Sono locali, italiane, straniere?</span></div><textarea id="t4" rows="2" placeholder="Provenienza geografica e culturale…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="sec-card">
+    <div class="sec-card-head">
+      <div class="sec-card-icon" style="background:var(--gold-light);color:var(--gold)">💬</div>
+      <div class="acc-info"><div class="acc-title">Come ti trovano e perché ti scelgono</div><div class="acc-sub">Il percorso decisionale del tuo cliente ideale</div></div>
+    </div>
+    <div class="sec-card-body">
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-gold">5</span><span class="q-text">Dove pensi che il tuo cliente ideale cerchi una wedding planner?</span></div><div class="q-note">Es. Instagram, Google, wedding blog, passaparola, venue referral…</div><textarea id="t5" rows="2" placeholder="I canali dove lo troveresti…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-gold">6</span><span class="q-text">Quali paure ha questa coppia prima di assumere una wedding planner?</span></div><div class="q-note">Capire le obiezioni ti permette di anticiparle nella comunicazione</div><textarea id="t6" rows="3" placeholder="Es. paura di perdere il controllo, di spendere troppo…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-gold">7</span><span class="q-text">Perché questa coppia dovrebbe scegliere te rispetto a un'altra wedding planner?</span></div><textarea id="t7" rows="3" placeholder="La tua promessa unica…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="sec-card">
+    <div class="sec-card-head">
+      <div class="sec-card-icon" style="background:var(--blue-light);color:var(--blue)">🌍</div>
+      <div class="acc-info"><div class="acc-title">Contesto e Valori</div><div class="acc-sub">L'identità profonda del tuo target</div></div>
+    </div>
+    <div class="sec-card-body">
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-blue">8</span><span class="q-text">Quali valori condividi con il tuo cliente ideale? Cosa avete in comune?</span></div><div class="q-note">Es. sostenibilità, artigianalità italiana, attenzione al dettaglio, spontaneità…</div><textarea id="t8" rows="2" placeholder="I valori che vi uniscono…"></textarea></div>
+      <div class="q"><div class="q-top"><span class="q-badge q-badge-blue">9</span><span class="q-text">C'è un tipo di cliente con cui NON vorresti lavorare? Perché?</span></div><div class="q-note">Definire l'anti-target aiuta a chiarire il target positivo</div><textarea id="t9" rows="2" placeholder="Es. coppie che vogliono solo il prezzo più basso…"></textarea></div>
+    </div>
+  </div>
+
+  <div class="btn-row"><button class="btn btn-ghost" onclick="prev(3)">← Torna allo Step 2</button><button class="btn btn-navy" onclick="submit()" id="sub-btn">✉ Invia la mia Analisi</button></div>
+</div>
+
+<!-- ═══ DONE ══════════════════════════════════════════════════════════════ -->
+<div id="s4" class="step-screen">
+  <div class="done-wrap">
+    <div class="done-icon">✉</div>
+    <h1>Analisi <em>inviata!</em></h1>
+    <p class="done-nome" id="done-nome"></p>
+    <p>Il tuo questionario è stato elaborato dall'AI e l'analisi completa è stata inviata a:</p>
+    <div class="done-email-box"><span>✉</span><span>team@weddingplannerspro.it</span></div>
+    <p>Il team Wedding Planners Pro riceverà un report dettagliato con:</p>
+    <div class="done-note">
+      <strong>✓ Analisi SWOT personalizzata</strong> — costruita sulle tue risposte reali<br>
+      <strong>✓ 2-3 proposte di posizionamento</strong> — con fit score e tagline<br>
+      <strong>✓ Prossimi passi concreti</strong> — azioni realizzabili entro 60 giorni<br>
+      <strong>✓ Messaggio motivante</strong> — scritto appositamente per te<br>
+      <strong>✓ Risposte originali</strong> — archivio completo del tuo questionario
+    </div>
+    <div class="done-divider"></div>
+    <p style="font-size:13px;color:var(--grey);margin-bottom:24px;">Hai completato il primo step del percorso <strong style="color:var(--navy)">Wedding Planners Pro</strong>. Tieni d'occhio le comunicazioni del team per i prossimi passi!</p>
+    <button class="btn btn-ghost" onclick="location.reload()">↩ Compila un nuovo questionario</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+const scales = {};
+let cur = 1;
+
+// Auto-resize textareas
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+document.addEventListener('input', e => {
+  if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
+});
+// Init all textareas on load
+document.querySelectorAll('textarea').forEach(autoResize);
+
+function tog(h) { h.closest('.acc').classList.toggle('open'); }
+
+function sc(id, val, btn) {
+  scales[id] = val;
+  document.getElementById('sc-' + id).querySelectorAll('.scb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  setTimeout(() => el.classList.remove('on'), 4000);
+}
+
+function show(n) {
+  [1, 2, 3, 4].forEach(i => {
+    const el = document.getElementById('s' + i);
+    if (el) el.className = 'step-screen' + (i === n ? ' active' : '');
+  });
+  prog(n);
+  cur = n;
+  window.scrollTo(0, 0);
+}
+
+function prog(active) {
+  [1, 2, 3, 4].forEach(i => {
+    const p = document.getElementById('sp' + i);
+    if (!p) return;
+    p.classList.remove('active', 'done');
+    if (i < active) p.classList.add('done');
+    else if (i === active) p.classList.add('active');
+  });
+  [1, 2, 3].forEach(i => {
+    const ln = document.getElementById('ln' + i);
+    if (ln) ln.classList.toggle('done', i < active);
+  });
+}
+
+function goTo(n) { if (n < cur) show(n); }
+
+function next(from) {
+  if (from === 1 && !document.getElementById('nome').value.trim()) {
+    toast('Inserisci il tuo nome per continuare');
+    return;
+  }
+  show(from + 1);
+}
+
+function prev(from) { show(from - 1); }
+
+const g = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+
+function collect() {
+  return {
+    step1: {
+      nome: g('nome'), citta: g('citta'), esperienza: g('esp'),
+      forze: { esperienze_pregresse: g('f_s1'), qualita_personali: g('f_s2'), gestione_stress: scales['s3'] || null, rete_contatti: g('f_s4'), capacita_digitali: scales['s5'] || null, talento_unico: g('s6') },
+      debolezze: { lacune_tecniche: g('w7'), capacita_comunicazione: scales['w8'] || null, paure_blocchi: g('w9'), visibilita_online: scales['w10'] || null },
+      opportunita: { motivazione_momento: g('o11'), caratteristiche_territorio: g('o12'), nicchia_naturale: g('o13') },
+      minacce: { contesto_sociale: g('t14'), ostacoli_carattere: g('t15') },
+      visione: { sogno_3anni: g('v16'), definizione_successo: g('v17') }
+    },
+    step2: {
+      mercato_locale: { numero_competitor: g('c1'), descrizione_competitor: g('c2'), forze_competitor_e_spazi: g('c3'), nicchia_libera: g('c4') },
+      prezzi_posizionamento: { fasce_prezzo_mercato: g('c5'), posizionamento_atteso: g('c6'), elemento_differenziante: g('c7') }
+    },
+    step3: {
+      coppia_ideale: { profilo: g('t1'), tipo_matrimonio: g('t2'), budget: g('t3'), provenienza: g('t4') },
+      percorso_decisionale: { canali_ricerca: g('t5'), paure_obiezioni: g('t6'), motivo_scelta: g('t7') },
+      valori_contesto: { valori_condivisi: g('t8'), anti_target: g('t9') }
+    }
+  };
+}
+
+async function submit() {
+  const btn = document.getElementById('sub-btn');
+  btn.disabled = true;
+  btn.textContent = 'Elaborazione…';
+  document.getElementById('loading').classList.add('on');
+  const payload = collect();
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('done-nome').textContent = data.nome
+      ? (data.nome + (payload.step1.citta ? ' · ' + payload.step1.citta : ''))
+      : '';
+    show(4);
+  } catch (err) {
+    toast('Errore: ' + err.message);
+    console.error(err);
+  } finally {
+    document.getElementById('loading').classList.remove('on');
+    btn.disabled = false;
+    btn.textContent = '✉ Invia la mia Analisi';
+  }
+}
+</script>
+</body>
+</html>
