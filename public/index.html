@@ -487,12 +487,16 @@ async function submit() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    document.getElementById('done-nome').textContent = data.nome
-      ? (data.nome + (payload.step1.citta ? ' · ' + payload.step1.citta : ''))
-      : '';
-    show(4);
+    // Background function returns 202 immediately — no JSON body needed
+    if (res.status === 202 || res.ok) {
+      document.getElementById('done-nome').textContent = payload.step1.nome
+        ? (payload.step1.nome + (payload.step1.citta ? ' · ' + payload.step1.citta : ''))
+        : '';
+      show(4);
+    } else {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `Errore server: ${res.status}`);
+    }
   } catch (err) {
     toast('Errore: ' + err.message);
     console.error(err);
