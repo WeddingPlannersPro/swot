@@ -9,7 +9,7 @@
 const RECIPIENT = "team@weddingplannerspro.it";
 const FROM      = "WPP SWOT Tool <onboarding@resend.dev>";
 
-export default async (req) => {
+export default async (req, context) => {
   if (req.method !== "POST") {
     return json({ error: "Method not allowed" }, 405);
   }
@@ -367,4 +367,7 @@ function formatRawData(step1, step2, step3) {
   return lines.join("\n");
 }
 
-export const config = { path: "/api/analyze" };
+export const config = {
+  path: "/api/analyze",
+  type: "background"
+};
