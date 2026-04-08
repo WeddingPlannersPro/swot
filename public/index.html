@@ -367,18 +367,17 @@ textarea:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(30,86,200,
     <div class="done-icon">✉</div>
     <h1>Analisi <em>inviata!</em></h1>
     <p class="done-nome" id="done-nome"></p>
-    <p>Il tuo questionario è stato elaborato dall'AI e l'analisi completa è stata inviata a:</p>
+    <p>Il tuo questionario è stato inviato con successo a:</p>
     <div class="done-email-box"><span>✉</span><span>team@weddingplannerspro.it</span></div>
-    <p>Il team Wedding Planners Pro riceverà un report dettagliato con:</p>
+    <p>Il team Wedding Planners Pro analizzerà le tue risposte e ti contatterà con:</p>
     <div class="done-note">
       <strong>✓ Analisi SWOT personalizzata</strong> — costruita sulle tue risposte reali<br>
-      <strong>✓ 2-3 proposte di posizionamento</strong> — con fit score e tagline<br>
-      <strong>✓ Prossimi passi concreti</strong> — azioni realizzabili entro 60 giorni<br>
-      <strong>✓ Messaggio motivante</strong> — scritto appositamente per te<br>
-      <strong>✓ Risposte originali</strong> — archivio completo del tuo questionario
+      <strong>✓ Proposte di posizionamento</strong> — studiate per il tuo profilo<br>
+      <strong>✓ Prossimi passi concreti</strong> — azioni realizzabili nei prossimi 60 giorni<br>
+      <strong>✓ Feedback motivante</strong> — pensato appositamente per te
     </div>
     <div class="done-divider"></div>
-    <p style="font-size:13px;color:var(--grey);margin-bottom:24px;">Hai completato il primo step del percorso <strong style="color:var(--navy)">Wedding Planners Pro</strong>. Tieni d'occhio le comunicazioni del team per i prossimi passi!</p>
+    <p style="font-size:13px;color:var(--grey);margin-bottom:24px;">Hai completato il questionario del percorso <strong style="color:var(--navy)">Wedding Planners Pro</strong>. Riceverai presto una risposta dal team!</p>
     <button class="btn btn-ghost" onclick="location.reload()">↩ Compila un nuovo questionario</button>
   </div>
 </div>
@@ -477,7 +476,7 @@ function collect() {
 }
 
 // ── Config ─────────────────────────────────────────────────────────────────
-const FORMSPREE_URL = 'https://formspree.io/f/mdapjbag';
+const FORMSPREE_URL = 'https://formspree.io/f/INSERISCI_QUI_ID';
 
 function formatEmail(payload) {
   const { step1, step2, step3 } = payload;
