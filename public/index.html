@@ -476,7 +476,7 @@ function collect() {
 }
 
 // ── Config ─────────────────────────────────────────────────────────────────
-const FORMSPREE_URL = 'https://formspree.io/f/INSERISCI_QUI_ID';
+const WEB3FORMS_KEY = 'cb74b8bc-dbff-49f1-996c-dc22b4c93f6d';
 
 function formatEmail(payload) {
   const { step1, step2, step3 } = payload;
@@ -519,14 +519,16 @@ async function submit() {
   const payload = collect();
 
   try {
-    const res = await fetch(FORMSPREE_URL, {
+    const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: `Nuovo Questionario SWOT — ${payload.step1.nome || 'Anonimo'}`,
+        from_name: 'WPP SWOT Tool',
+        message: formatEmail(payload),
         nome: payload.step1.nome || '',
         citta: payload.step1.citta || '',
-        _subject: `Nuovo Questionario SWOT — ${payload.step1.nome || 'Anonimo'}`,
-        messaggio: formatEmail(payload),
       }),
     });
 
