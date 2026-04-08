@@ -87,8 +87,8 @@ Note:
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-opus-4-5-20251101",
-        max_tokens: 2500,
+        model: "claude-sonnet-4-6",
+        max_tokens: 1500,
         system: systemPrompt,
         messages: [{ role: "user", content: userPrompt }],
       }),
