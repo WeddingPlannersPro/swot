@@ -397,8 +397,9 @@ function autoResize(el) {
 document.addEventListener('input', e => {
   if (e.target.tagName === 'TEXTAREA') autoResize(e.target);
 });
-// Init all textareas on load
-document.querySelectorAll('textarea').forEach(autoResize);
+window.addEventListener('load', () => {
+  document.querySelectorAll('textarea').forEach(autoResize);
+});
 
 function tog(h) { h.closest('.acc').classList.toggle('open'); }
 
@@ -475,36 +476,108 @@ function collect() {
   };
 }
 
+// ── Config ─────────────────────────────────────────────────────────────────
+const FORMSPREE_URL = 'https://formspree.io/f/INSERISCI_QUI_ID';
+
+function formatEmail(payload) {
+  const { step1, step2, step3 } = payload;
+  const s = (label, val) => val ? `${label}:\n${val}\n` : '';
+  const today = new Date().toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' });
+
+  return `QUESTIONARIO SWOT — Wedding Planners Pro
+Data: ${today}
+Nome: ${step1.nome || '—'} | Città: ${step1.citta || '—'} | Esperienza: ${step1.esperienza || '—'}
+
+══════════════════════════════
+STEP 1 — ANALISI PERSONALE
+══════════════════════════════
+
+— PUNTI DI FORZA —
+${s('Esperienze pregresse', step1.forze?.esperienze_pregresse)}${s('Qualità personali', step1.forze?.qualita_personali)}${s('Gestione stress (1-5)', step1.forze?.gestione_stress)}${s('Rete contatti', step1.forze?.rete_contatti)}${s('Capacità digitali (1-5)', step1.forze?.capacita_digitali)}${s('Talento unico', step1.forze?.talento_unico)}
+— PUNTI DI DEBOLEZZA —
+${s('Lacune tecniche', step1.debolezze?.lacune_tecniche)}${s('Comunicazione (1-5)', step1.debolezze?.capacita_comunicazione)}${s('Paure/blocchi', step1.debolezze?.paure_blocchi)}${s('Visibilità online (1-5)', step1.debolezze?.visibilita_online)}
+— OPPORTUNITÀ —
+${s('Motivazione/momento', step1.opportunita?.motivazione_momento)}${s('Territorio', step1.opportunita?.caratteristiche_territorio)}${s('Nicchia naturale', step1.opportunita?.nicchia_naturale)}
+— MINACCE —
+${s('Contesto sociale', step1.minacce?.contesto_sociale)}${s('Ostacoli carattere', step1.minacce?.ostacoli_carattere)}
+— VISIONE —
+${s('Sogno a 3 anni', step1.visione?.sogno_3anni)}${s('Definizione successo', step1.visione?.definizione_successo)}
+══════════════════════════════
+STEP 2 — CONCORRENZA
+══════════════════════════════
+${s('N° competitor area', step2.mercato_locale?.numero_competitor)}${s('Descrizione competitor', step2.mercato_locale?.descrizione_competitor)}${s('Punti di forza e spazi', step2.mercato_locale?.forze_competitor_e_spazi)}${s('Nicchia libera', step2.mercato_locale?.nicchia_libera)}${s('Fasce prezzo mercato', step2.prezzi_posizionamento?.fasce_prezzo_mercato)}${s('Posizionamento atteso', step2.prezzi_posizionamento?.posizionamento_atteso)}${s('Elemento differenziante', step2.prezzi_posizionamento?.elemento_differenziante)}
+══════════════════════════════
+STEP 3 — TARGET IDEALE
+══════════════════════════════
+${s('Profilo coppia ideale', step3.coppia_ideale?.profilo)}${s('Tipo matrimonio', step3.coppia_ideale?.tipo_matrimonio)}${s('Budget indicativo', step3.coppia_ideale?.budget)}${s('Provenienza', step3.coppia_ideale?.provenienza)}${s('Canali di ricerca', step3.percorso_decisionale?.canali_ricerca)}${s('Paure/obiezioni', step3.percorso_decisionale?.paure_obiezioni)}${s('Motivo della scelta', step3.percorso_decisionale?.motivo_scelta)}${s('Valori condivisi', step3.valori_contesto?.valori_condivisi)}${s('Anti-target', step3.valori_contesto?.anti_target)}`;
+}
+
 async function submit() {
   const btn = document.getElementById('sub-btn');
   btn.disabled = true;
-  btn.textContent = 'Elaborazione…';
+  btn.textContent = 'Invio in corso…';
   document.getElementById('loading').classList.add('on');
   const payload = collect();
+
   try {
-    const res = await fetch('/api/analyze', {
+    const res = await fetch(FORMSPREE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        nome: payload.step1.nome || '',
+        citta: payload.step1.citta || '',
+        _subject: `Nuovo Questionario SWOT — ${payload.step1.nome || 'Anonimo'}`,
+        messaggio: formatEmail(payload),
+      }),
     });
-    // Background function returns 202 immediately — no JSON body needed
-    if (res.status === 202 || res.ok) {
-      document.getElementById('done-nome').textContent = payload.step1.nome
-        ? (payload.step1.nome + (payload.step1.citta ? ' · ' + payload.step1.citta : ''))
-        : '';
-      show(4);
-    } else {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || `Errore server: ${res.status}`);
-    }
+
+    if (!res.ok) throw new Error('Errore invio');
+
+    document.getElementById('done-nome').textContent = payload.step1.nome
+      + (payload.step1.citta ? ' · ' + payload.step1.citta : '');
+    show(4);
+
   } catch (err) {
-    toast('Errore: ' + err.message);
+    toast('Errore invio — riprova');
     console.error(err);
   } finally {
     document.getElementById('loading').classList.remove('on');
     btn.disabled = false;
     btn.textContent = '✉ Invia la mia Analisi';
   }
+}
+
+function formatEmail(payload) {
+  const { step1, step2, step3 } = payload;
+  const s = (label, val) => val ? `${label}:\n${val}\n` : '';
+  const today = new Date().toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' });
+
+  return `QUESTIONARIO SWOT — Wedding Planners Pro
+Data: ${today}
+Nome: ${step1.nome || '—'} | Città: ${step1.citta || '—'} | Esperienza: ${step1.esperienza || '—'}
+
+══════════════════════════════
+STEP 1 — ANALISI PERSONALE
+══════════════════════════════
+
+— PUNTI DI FORZA —
+${s('Esperienze pregresse', step1.forze?.esperienze_pregresse)}${s('Qualità personali', step1.forze?.qualita_personali)}${s('Gestione stress (1-5)', step1.forze?.gestione_stress)}${s('Rete contatti', step1.forze?.rete_contatti)}${s('Capacità digitali (1-5)', step1.forze?.capacita_digitali)}${s('Talento unico', step1.forze?.talento_unico)}
+— PUNTI DI DEBOLEZZA —
+${s('Lacune tecniche', step1.debolezze?.lacune_tecniche)}${s('Comunicazione (1-5)', step1.debolezze?.capacita_comunicazione)}${s('Paure/blocchi', step1.debolezze?.paure_blocchi)}${s('Visibilità online (1-5)', step1.debolezze?.visibilita_online)}
+— OPPORTUNITÀ —
+${s('Motivazione/momento', step1.opportunita?.motivazione_momento)}${s('Territorio', step1.opportunita?.caratteristiche_territorio)}${s('Nicchia naturale', step1.opportunita?.nicchia_naturale)}
+— MINACCE —
+${s('Contesto sociale', step1.minacce?.contesto_sociale)}${s('Ostacoli carattere', step1.minacce?.ostacoli_carattere)}
+— VISIONE —
+${s('Sogno a 3 anni', step1.visione?.sogno_3anni)}${s('Definizione successo', step1.visione?.definizione_successo)}
+══════════════════════════════
+STEP 2 — CONCORRENZA
+══════════════════════════════
+${s('N° competitor area', step2.mercato_locale?.numero_competitor)}${s('Descrizione competitor', step2.mercato_locale?.descrizione_competitor)}${s('Punti di forza e spazi', step2.mercato_locale?.forze_competitor_e_spazi)}${s('Nicchia libera', step2.mercato_locale?.nicchia_libera)}${s('Fasce prezzo mercato', step2.prezzi_posizionamento?.fasce_prezzo_mercato)}${s('Posizionamento atteso', step2.prezzi_posizionamento?.posizionamento_atteso)}${s('Elemento differenziante', step2.prezzi_posizionamento?.elemento_differenziante)}
+══════════════════════════════
+STEP 3 — TARGET IDEALE
+══════════════════════════════
+${s('Profilo coppia ideale', step3.coppia_ideale?.profilo)}${s('Tipo matrimonio', step3.coppia_ideale?.tipo_matrimonio)}${s('Budget indicativo', step3.coppia_ideale?.budget)}${s('Provenienza', step3.coppia_ideale?.provenienza)}${s('Canali di ricerca', step3.percorso_decisionale?.canali_ricerca)}${s('Paure/obiezioni', step3.percorso_decisionale?.paure_obiezioni)}${s('Motivo della scelta', step3.percorso_decisionale?.motivo_scelta)}${s('Valori condivisi', step3.valori_contesto?.valori_condivisi)}${s('Anti-target', step3.valori_contesto?.anti_target)}`;
 }
 </script>
 </body>
